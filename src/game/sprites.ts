@@ -134,9 +134,11 @@ export function getSpriteImageData(sprite: SpriteData): ImageData {
   return imageData;
 }
 
+type RenderContext = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
+
 /** Draw a sprite onto a canvas context at game coordinates */
 export function drawSprite(
-  ctx: CanvasRenderingContext2D,
+  ctx: RenderContext,
   sprite: SpriteData,
   x: number,
   y: number,
