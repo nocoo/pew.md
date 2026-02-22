@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint src/",
     "test": "bun test",
     "test:e2e": "bun test --preload ./src/__tests__/e2e/setup.ts src/__tests__/e2e",
     "check": "bun run lint && bun test"
@@ -17,7 +17,6 @@
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.2.0",
     "@types/bun": "^1.2.14",
     "@types/node": "^22.15.0",
