@@ -2,24 +2,96 @@
 
 import { useRef, useEffect, useState, useCallback } from "react";
 import { GameEngine } from "@/game/engine";
+import NameInput from "./NameInput";
 
-export default function GameCanvas() {
+interface SessionToken {
+  sessionId: string;
+  startTime: number;
+  token: string;
+}
+
+interface GameCanvasProps {
+  onScoreSubmitted: (insertedId: number) => void;
+}
+
+export default function GameCanvas({ onScoreSubmitted }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<GameEngine | null>(null);
+  const sessionRef = useRef<SessionToken | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [wave, setWave] = useState(0);
   const [phase, setPhase] = useState<"title" | "playing" | "gameover">("title");
+  const [showNameInput, setShowNameInput] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  /** Fetch a session token from the server */
+  const fetchSessionToken = useCallback(async () => {
+    try {
+      const res = await fetch("/api/token");
+      if (res.ok) {
+        sessionRef.current = (await res.json()) as SessionToken;
+      }
+    } catch {
+      // silently fail; score just won't be saved
+    }
+  }, []);
 
   const handleScoreChange = useCallback((s: number) => setScore(s), []);
   const handleLivesChange = useCallback((l: number) => setLives(l), []);
   const handleWaveChange = useCallback((w: number) => {
     setWave(w);
     setPhase("playing");
-  }, []);
+    // fetch token on first wave (game start)
+    if (w === 1) {
+      void fetchSessionToken();
+    }
+  }, [fetchSessionToken]);
+
   const handleGameOver = useCallback((s: number) => {
     setScore(s);
     setPhase("gameover");
+    setShowNameInput(true);
+  }, []);
+
+  const submitScore = useCallback(async (name: string) => {
+    const session = sessionRef.current;
+    if (!session) {
+      setShowNameInput(false);
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/scores", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          score,
+          wave,
+          sessionId: session.sessionId,
+          startTime: session.startTime,
+          token: session.token,
+        }),
+      });
+
+      if (res.ok) {
+        const data = (await res.json()) as { inserted: { id: number } };
+        onScoreSubmitted(data.inserted.id);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setSubmitting(false);
+      setShowNameInput(false);
+      sessionRef.current = null;
+    }
+  }, [score, wave, onScoreSubmitted]);
+
+  const skipScore = useCallback(() => {
+    setShowNameInput(false);
+    sessionRef.current = null;
   }, []);
 
   useEffect(() => {
@@ -60,13 +132,27 @@ export default function GameCanvas() {
         </span>
       </div>
 
-      {/* Canvas */}
-      <canvas
-        ref={canvasRef}
-        className="border-2 border-[#5b3a29] bg-black"
-        tabIndex={0}
-        onFocus={() => canvasRef.current?.focus()}
-      />
+      {/* Canvas + overlay container */}
+      <div className="relative">
+        <canvas
+          ref={canvasRef}
+          className="border-2 border-[#5b3a29] bg-black"
+          tabIndex={0}
+          onFocus={() => canvasRef.current?.focus()}
+        />
+
+        {/* Name input overlay on game over */}
+        {showNameInput && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+            <NameInput
+              score={score}
+              onSubmit={submitScore}
+              onSkip={skipScore}
+              submitting={submitting}
+            />
+          </div>
+        )}
+      </div>
 
       {/* Instructions */}
       {phase === "title" && (
