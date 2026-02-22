@@ -43,7 +43,7 @@ src/
 ├── components/    # React UI layer
 │   ├── GameCanvas.tsx   # Canvas mount, session management
 │   ├── Leaderboard.tsx  # Top 10 sidebar
-│   └── NameInput.tsx    # Game over name entry (3-8 chars)
+│   └── NameInput.tsx    # Game over name entry (1-6 chars)
 ├── lib/           # Server-side
 │   ├── db.ts      # SQLite schema & queries
 │   └── anticheat.ts # HMAC session tokens, replay prevention

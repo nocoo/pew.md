@@ -11,7 +11,7 @@ describe("database", () => {
     db.exec(`
       CREATE TABLE scores (
         id        INTEGER PRIMARY KEY AUTOINCREMENT,
-        name      TEXT    NOT NULL CHECK(length(name) BETWEEN 3 AND 8),
+        name      TEXT    NOT NULL CHECK(length(name) BETWEEN 1 AND 6),
         score     INTEGER NOT NULL CHECK(score >= 0),
         wave      INTEGER NOT NULL CHECK(wave >= 1),
         duration  REAL    NOT NULL CHECK(duration > 0),
@@ -58,15 +58,15 @@ describe("database", () => {
     expect(rows[2].name).toBe("LOW");
   });
 
-  test("name must be 3-8 characters", () => {
+  test("name must be 1-6 characters", () => {
     const stmt = db.prepare(
       "INSERT INTO scores (name, score, wave, duration) VALUES (?, ?, ?, ?)",
     );
 
-    expect(() => stmt.run("AB", 100, 1, 10)).toThrow();
-    expect(() => stmt.run("ABCDEFGHI", 100, 1, 10)).toThrow();
-    expect(() => stmt.run("ACE", 100, 1, 10)).not.toThrow();
-    expect(() => stmt.run("LONGNAME", 100, 1, 10)).not.toThrow();
+    expect(() => stmt.run("", 100, 1, 10)).toThrow();
+    expect(() => stmt.run("ABCDEFG", 100, 1, 10)).toThrow();
+    expect(() => stmt.run("A", 100, 1, 10)).not.toThrow();
+    expect(() => stmt.run("ABCDEF", 100, 1, 10)).not.toThrow();
   });
 
   test("score must be non-negative", () => {

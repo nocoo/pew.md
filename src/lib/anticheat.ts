@@ -60,8 +60,8 @@ export function validateSubmission(sub: ScoreSubmission): ValidationResult {
 
   // 3. validate name format
   const nameTrimmed = sub.name.trim();
-  if (nameTrimmed.length < 3 || nameTrimmed.length > 8) {
-    return { valid: false, error: "name must be 3-8 characters" };
+  if (nameTrimmed.length < 1 || nameTrimmed.length > 6) {
+    return { valid: false, error: "name must be 1-6 characters" };
   }
   if (!/^[a-zA-Z0-9]+$/.test(nameTrimmed)) {
     return { valid: false, error: "name must be alphanumeric" };

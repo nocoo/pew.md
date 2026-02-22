@@ -23,12 +23,12 @@ export default function NameInput({ score, onSubmit, onSkip, submitting }: NameI
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = name.trim().toUpperCase();
-    if (trimmed.length >= 3 && trimmed.length <= 8) {
+    if (trimmed.length >= 1 && trimmed.length <= 6) {
       onSubmit(trimmed);
     }
   };
 
-  const valid = /^[a-zA-Z0-9]{3,8}$/.test(name.trim());
+  const valid = /^[a-zA-Z0-9]{1,6}$/.test(name.trim());
 
   return (
     <div className="flex flex-col items-center gap-3 rounded border border-[#5b3a29] bg-[#1a1510] px-5 py-4 font-mono">
@@ -42,9 +42,9 @@ export default function NameInput({ score, onSubmit, onSkip, submitting }: NameI
           ref={inputRef}
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8))}
-          placeholder="AAA"
-          maxLength={8}
+          onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z0-9]/g, "").slice(0, 6))}
+          placeholder="ACE"
+          maxLength={6}
           disabled={submitting}
           className="w-28 rounded border border-[#5b3a29] bg-[#111] px-2 py-1 text-center text-sm uppercase tracking-widest text-[#f5f0e1] placeholder-[#555] outline-none focus:border-[#f1c40f]"
           // prevent game input while typing
@@ -68,7 +68,7 @@ export default function NameInput({ score, onSubmit, onSkip, submitting }: NameI
           </button>
         </div>
       </form>
-      <p className="text-[8px] text-[#555]">3-8 alphanumeric characters</p>
+      <p className="text-[8px] text-[#555]">1-6 alphanumeric characters</p>
     </div>
   );
 }
