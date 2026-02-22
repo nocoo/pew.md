@@ -2,10 +2,18 @@ import type { GameState, PowerUpKind } from "./types";
 import { GAME_WIDTH, GAME_HEIGHT } from "./types";
 import { InputManager } from "./input";
 import { createPlayer, updatePlayer, hitPlayer } from "./player";
-import { createBullet, updateBullets, pruneDeadBullets } from "./bullet";
+import { updateBullets, pruneDeadBullets } from "./bullet";
 import { createEnemy, updateEnemies, damageEnemy, pruneDeadEnemies } from "./enemy";
 import { checkCollision } from "./collision";
 import { createWaveState, updateWave, getEnemyTypeForWave } from "./wave";
+import {
+  trySpawnPowerUp,
+  collectPowerUps,
+  applyPowerUp,
+  updateActivePowerUps,
+  pruneDeadPowerUps,
+  createPlayerBullets,
+} from "./powerup";
 import {
   drawSprite,
   getCowboySprite,
@@ -25,7 +33,6 @@ const CANVAS_WIDTH = GAME_WIDTH * SCALE;
 const CANVAS_HEIGHT = GAME_HEIGHT * SCALE;
 
 const BULLET_COLOR = "#f1c40f";
-const BORDER_SIZE = 16; // pixels reserved for border decoration
 
 export class GameEngine {
   private readonly canvas: HTMLCanvasElement;
@@ -144,10 +151,15 @@ export class GameEngine {
     // --- playing ---
     state.time += dt;
 
+    // tick active power-up durations
+    updateActivePowerUps(state.player, dt);
+
     // player movement & shooting
     const fireDir = updatePlayer(state.player, this.input, dt);
     if (fireDir) {
-      state.bullets.push(createBullet(state.player.pos, fireDir, true));
+      // create bullets with power-up effects (spread/pierce)
+      const bullets = createPlayerBullets(state.player, fireDir);
+      state.bullets.push(...bullets);
     }
 
     // bullets
@@ -173,14 +185,43 @@ export class GameEngine {
       for (const enemy of state.enemies) {
         if (!enemy.alive) continue;
         if (checkCollision(bullet, enemy)) {
-          bullet.alive = false;
+          // pierce bullets pass through enemies instead of dying
+          if (!bullet.pierce) {
+            bullet.alive = false;
+          }
           const killed = damageEnemy(enemy, bullet.damage);
           if (killed) {
             state.score += enemy.score;
             this.onScoreChange?.(state.score);
+
+            // try spawning a power-up drop
+            const powerUp = trySpawnPowerUp(
+              enemy.pos,
+              state.wave.current,
+            );
+            if (powerUp) {
+              state.powerUps.push(powerUp);
+            }
           }
-          break;
+          if (!bullet.pierce) break;
         }
+      }
+    }
+
+    // collision: player vs power-ups
+    const collected = collectPowerUps(state.player, state.powerUps);
+    for (const pu of collected) {
+      if (pu.kind === "nuke") {
+        // nuke: kill all enemies and award score
+        for (const enemy of state.enemies) {
+          if (enemy.alive) {
+            state.score += enemy.score;
+            enemy.alive = false;
+          }
+        }
+        this.onScoreChange?.(state.score);
+      } else {
+        applyPowerUp(state.player, pu);
       }
     }
 
@@ -203,6 +244,7 @@ export class GameEngine {
     // prune dead entities
     state.bullets = pruneDeadBullets(state.bullets);
     state.enemies = pruneDeadEnemies(state.enemies);
+    state.powerUps = pruneDeadPowerUps(state.powerUps);
   }
 
   private render(): void {
@@ -221,12 +263,14 @@ export class GameEngine {
       return;
     }
 
-    // draw power-ups
+    // draw power-ups (bobbing effect)
     for (const pu of state.powerUps) {
       if (!pu.alive) continue;
       const sprite = this.getPowerUpSprite(pu.kind);
       if (sprite) {
-        drawSprite(ctx, sprite, pu.pos.x, pu.pos.y);
+        // gentle bob animation
+        const bob = Math.sin(state.time * 4) * 2;
+        drawSprite(ctx, sprite, pu.pos.x, pu.pos.y + bob);
       }
     }
 

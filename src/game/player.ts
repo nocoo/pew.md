@@ -3,7 +3,9 @@ import { GAME_WIDTH, GAME_HEIGHT, TILE_SIZE } from "./types";
 import type { InputManager } from "./input";
 
 const PLAYER_SPEED = 80; // pixels per second
-const FIRE_RATE = 4; // shots per second
+const BASE_FIRE_RATE = 4; // shots per second
+const MOVING_FIRE_BONUS = 1.1; // 10% faster fire rate while moving
+const RAPIDFIRE_MULTIPLIER = 2; // double fire rate with rapidfire power-up
 const INVINCIBLE_DURATION = 1.5; // seconds after being hit
 
 export function createPlayer(): Player {
@@ -16,11 +18,22 @@ export function createPlayer(): Player {
     alive: true,
     lives: 3,
     speed: PLAYER_SPEED,
-    fireRate: FIRE_RATE,
+    fireRate: BASE_FIRE_RATE,
     fireCooldown: 0,
     direction: { x: 0, y: 1 }, // face down initially
     invincibleTimer: 0,
+    activePowerUps: [],
   };
+}
+
+/** Get effective fire rate considering movement and active power-ups */
+export function getEffectiveFireRate(player: Player, isMoving: boolean): number {
+  let rate = player.fireRate;
+  if (isMoving) rate *= MOVING_FIRE_BONUS;
+  if (player.activePowerUps.some((ap) => ap.kind === "rapidfire")) {
+    rate *= RAPIDFIRE_MULTIPLIER;
+  }
+  return rate;
 }
 
 export function updatePlayer(
@@ -31,9 +44,10 @@ export function updatePlayer(
   if (!player.alive) return null;
 
   const dir = input.getDirection();
+  const isMoving = dir.x !== 0 || dir.y !== 0;
 
   // update facing direction (keep last direction when idle)
-  if (dir.x !== 0 || dir.y !== 0) {
+  if (isMoving) {
     player.direction = { x: dir.x, y: dir.y };
 
     // move player
@@ -51,9 +65,10 @@ export function updatePlayer(
   // handle invincibility
   player.invincibleTimer = Math.max(0, player.invincibleTimer - dt);
 
-  // auto-fire when moving
-  if ((dir.x !== 0 || dir.y !== 0) && player.fireCooldown <= 0) {
-    player.fireCooldown = 1 / player.fireRate;
+  // always auto-fire (standing or moving); moving gives bonus fire rate
+  if (player.fireCooldown <= 0) {
+    const effectiveRate = getEffectiveFireRate(player, isMoving);
+    player.fireCooldown = 1 / effectiveRate;
     return { ...player.direction }; // return fire direction
   }
 

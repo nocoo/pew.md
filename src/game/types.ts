@@ -15,6 +15,13 @@ export interface Entity {
   alive: boolean;
 }
 
+export type PowerUpKind = "spread" | "rapidfire" | "pierce" | "nuke";
+
+export interface ActivePowerUp {
+  kind: PowerUpKind;
+  remaining: number; // seconds remaining
+}
+
 export interface Player extends Entity {
   lives: number;
   speed: number;
@@ -22,12 +29,14 @@ export interface Player extends Entity {
   fireCooldown: number; // remaining cooldown in seconds
   direction: Vector2; // last movement direction (also shoot direction)
   invincibleTimer: number; // seconds of invincibility remaining after hit
+  activePowerUps: ActivePowerUp[]; // currently active timed power-ups
 }
 
 export interface Bullet extends Entity {
   velocity: Vector2;
   damage: number;
   fromPlayer: boolean;
+  pierce: boolean; // whether bullet passes through enemies
 }
 
 export type EnemyType = "basic" | "fast" | "tank";
@@ -40,11 +49,9 @@ export interface Enemy extends Entity {
   score: number; // points awarded on kill
 }
 
-export type PowerUpKind = "spread" | "rapidfire" | "pierce" | "nuke";
-
 export interface PowerUp extends Entity {
   kind: PowerUpKind;
-  duration: number; // 0 = instant (e.g. life)
+  duration: number; // seconds of effect (0 = instant like nuke)
 }
 
 export interface WaveState {

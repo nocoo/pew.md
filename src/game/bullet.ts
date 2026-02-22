@@ -8,6 +8,7 @@ export function createBullet(
   origin: Vector2,
   direction: Vector2,
   fromPlayer: boolean,
+  pierce = false,
 ): Bullet {
   // spawn bullet from center of the entity
   const halfTile = TILE_SIZE / 2;
@@ -24,6 +25,7 @@ export function createBullet(
     },
     damage: 1,
     fromPlayer,
+    pierce,
   };
 }
 

@@ -7,8 +7,14 @@ describe("bullet", () => {
     const b = createBullet({ x: 100, y: 100 }, { x: 1, y: 0 }, true);
     expect(b.alive).toBe(true);
     expect(b.fromPlayer).toBe(true);
+    expect(b.pierce).toBe(false);
     expect(b.velocity.x).toBeGreaterThan(0);
     expect(b.velocity.y).toBe(0);
+  });
+
+  test("createBullet with pierce flag", () => {
+    const b = createBullet({ x: 100, y: 100 }, { x: 1, y: 0 }, true, true);
+    expect(b.pierce).toBe(true);
   });
 
   test("updateBullets moves bullets by velocity", () => {
