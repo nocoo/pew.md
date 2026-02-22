@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { validateSubmission } from "@/lib/anticheat";
 import type { ScoreSubmission } from "@/lib/anticheat";
+import { getTopScores, insertScore } from "@/lib/db";
 
 export async function GET() {
-  const { getTopScores } = await import("@/lib/db");
   const scores = getTopScores(10);
   return NextResponse.json(scores);
 }
@@ -27,7 +27,6 @@ export async function POST(request: Request) {
   const duration = result.duration ?? 0;
 
   try {
-    const { insertScore, getTopScores } = await import("@/lib/db");
     const row = insertScore(name, body.score, body.wave, duration);
     // return the inserted row + current leaderboard
     const scores = getTopScores(10);

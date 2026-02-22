@@ -1,21 +1,21 @@
-import { Database } from "bun:sqlite";
+import Database from "better-sqlite3";
 import path from "node:path";
 
 const DB_PATH = path.join(process.cwd(), "pew.db");
 
-let _db: Database | null = null;
+let _db: Database.Database | null = null;
 
-export function getDb(): Database {
+export function getDb(): Database.Database {
   if (!_db) {
     _db = new Database(DB_PATH);
-    _db.exec("PRAGMA journal_mode = WAL");
-    _db.exec("PRAGMA foreign_keys = ON");
+    _db.pragma("journal_mode = WAL");
+    _db.pragma("foreign_keys = ON");
     migrate(_db);
   }
   return _db;
 }
 
-function migrate(db: Database): void {
+function migrate(db: Database.Database): void {
   db.exec(`
     CREATE TABLE IF NOT EXISTS scores (
       id        INTEGER PRIMARY KEY AUTOINCREMENT,
