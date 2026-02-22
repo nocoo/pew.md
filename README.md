@@ -4,6 +4,10 @@ A pixel art twin-stick shooter in the browser, inspired by *Journey of the Prair
 
 Built with Next.js 16, Bun, TypeScript (strict mode), and Tailwind CSS 4. All sprites are drawn purely in code — no image assets.
 
+**[Play now → pew.md](https://pew.md)**
+
+![pew.md gameplay](https://s.zhe.to/dcd0e6e42358/20260222/8f74eaa9-20c4-4d15-990f-52d2349fb950.jpg)
+
 ## Play
 
 Move with **WASD** or **Arrow Keys**. Your cowboy auto-fires in the direction you're moving. Survive waves of bandits, collect power-ups, and climb the leaderboard.
@@ -23,7 +27,7 @@ Move with **WASD** or **Arrow Keys**. Your cowboy auto-fires in the direction yo
 - **Framework**: [Next.js 16](https://nextjs.org) (App Router)
 - **Language**: TypeScript 5.9 (strict mode)
 - **Styling**: Tailwind CSS 4
-- **Database**: SQLite via `bun:sqlite`
+- **Database**: SQLite via `better-sqlite3`
 
 ## Architecture
 
