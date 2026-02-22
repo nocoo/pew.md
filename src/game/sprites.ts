@@ -157,3 +157,160 @@ export function getCowboySprite(dir: { x: number; y: number }): SpriteData {
   if (dir.y < -0.3) return COWBOY_UP;
   return COWBOY_DOWN;
 }
+
+// --- environment sprites ---
+
+// grass tile colors
+const g1 = "#4a8c3f"; // grass base
+const g2 = "#3d7a34"; // grass dark
+const g3 = "#5a9e4e"; // grass light
+const g4 = "#6aad5c"; // grass highlight
+const g5 = "#3a6e30"; // grass shadow
+
+/** 16x16 grass tile with texture */
+export const GRASS_TILE_A: SpriteData = [
+  [g1, g1, g2, g1, g1, g3, g1, g1, g2, g1, g1, g1, g3, g1, g1, g2],
+  [g1, g2, g1, g1, g3, g1, g1, g2, g1, g1, g3, g1, g1, g1, g2, g1],
+  [g2, g1, g1, g4, g1, g1, g2, g1, g1, g1, g1, g2, g1, g3, g1, g1],
+  [g1, g1, g3, g1, g1, g1, g1, g3, g1, g2, g1, g1, g1, g1, g1, g2],
+  [g1, g2, g1, g1, g5, g1, g1, g1, g1, g1, g3, g1, g2, g1, g1, g1],
+  [g3, g1, g1, g1, g1, g1, g2, g1, g4, g1, g1, g1, g1, g1, g3, g1],
+  [g1, g1, g2, g1, g1, g3, g1, g1, g1, g1, g2, g1, g1, g5, g1, g1],
+  [g1, g1, g1, g1, g2, g1, g1, g5, g1, g1, g1, g4, g1, g1, g1, g2],
+  [g2, g1, g4, g1, g1, g1, g1, g1, g1, g3, g1, g1, g1, g1, g2, g1],
+  [g1, g1, g1, g2, g1, g1, g3, g1, g1, g1, g1, g2, g1, g1, g1, g1],
+  [g1, g3, g1, g1, g1, g5, g1, g1, g2, g1, g1, g1, g4, g1, g1, g3],
+  [g2, g1, g1, g1, g1, g1, g1, g4, g1, g1, g5, g1, g1, g1, g1, g1],
+  [g1, g1, g2, g3, g1, g1, g1, g1, g1, g1, g1, g1, g2, g1, g5, g1],
+  [g1, g5, g1, g1, g1, g2, g1, g1, g3, g1, g1, g1, g1, g1, g1, g2],
+  [g3, g1, g1, g1, g1, g1, g4, g1, g1, g2, g1, g3, g1, g1, g1, g1],
+  [g1, g1, g2, g1, g3, g1, g1, g1, g1, g1, g1, g1, g2, g1, g3, g1],
+];
+
+export const GRASS_TILE_B: SpriteData = [
+  [g2, g1, g1, g3, g1, g1, g1, g2, g1, g1, g4, g1, g1, g2, g1, g1],
+  [g1, g1, g4, g1, g1, g2, g1, g1, g3, g1, g1, g1, g2, g1, g1, g3],
+  [g1, g3, g1, g1, g1, g1, g5, g1, g1, g1, g1, g3, g1, g1, g5, g1],
+  [g1, g1, g1, g2, g1, g1, g1, g1, g2, g4, g1, g1, g1, g1, g1, g1],
+  [g2, g1, g1, g1, g1, g3, g1, g1, g1, g1, g1, g2, g1, g4, g1, g1],
+  [g1, g5, g1, g1, g2, g1, g4, g1, g1, g1, g3, g1, g1, g1, g1, g2],
+  [g1, g1, g1, g1, g1, g1, g1, g2, g1, g5, g1, g1, g2, g1, g1, g1],
+  [g3, g1, g2, g1, g1, g5, g1, g1, g1, g1, g1, g1, g1, g3, g1, g1],
+  [g1, g1, g1, g1, g3, g1, g1, g1, g4, g1, g2, g1, g1, g1, g1, g5],
+  [g1, g4, g1, g2, g1, g1, g1, g1, g1, g1, g1, g1, g5, g1, g2, g1],
+  [g2, g1, g1, g1, g1, g1, g2, g3, g1, g1, g1, g4, g1, g1, g1, g1],
+  [g1, g1, g5, g1, g1, g4, g1, g1, g1, g2, g1, g1, g1, g1, g3, g1],
+  [g1, g1, g1, g3, g1, g1, g1, g1, g5, g1, g1, g1, g2, g1, g1, g1],
+  [g4, g1, g1, g1, g2, g1, g1, g1, g1, g1, g3, g1, g1, g5, g1, g1],
+  [g1, g2, g1, g1, g1, g1, g3, g1, g1, g1, g1, g2, g1, g1, g1, g4],
+  [g1, g1, g1, g5, g1, g1, g1, g2, g1, g4, g1, g1, g1, g1, g2, g1],
+];
+
+// tree/bush colors
+const t1 = "#2d5a1e"; // dark tree green
+const t2 = "#3d7a2e"; // mid tree green
+const t3 = "#4d8a3e"; // light tree green
+const t4 = "#5d3a1e"; // trunk brown
+const t5 = "#4a2e14"; // trunk dark
+
+/** 16x16 tree top (canopy) */
+export const TREE_TOP: SpriteData = [
+  [_, _, _, _, _, _, t1, t2, t2, t1, _, _, _, _, _, _],
+  [_, _, _, _, _, t1, t2, t3, t3, t2, t1, _, _, _, _, _],
+  [_, _, _, _, t1, t2, t3, t3, t3, t3, t2, t1, _, _, _, _],
+  [_, _, _, t1, t2, t3, t3, t2, t2, t3, t3, t2, t1, _, _, _],
+  [_, _, t1, t2, t3, t3, t2, t1, t1, t2, t3, t3, t2, t1, _, _],
+  [_, _, t1, t2, t3, t2, t1, t2, t2, t1, t2, t3, t2, t1, _, _],
+  [_, t1, t2, t3, t2, t1, t2, t3, t3, t2, t1, t2, t3, t2, t1, _],
+  [_, t1, t2, t3, t3, t2, t3, t3, t3, t3, t2, t3, t3, t2, t1, _],
+  [t1, t2, t3, t2, t3, t3, t2, t3, t3, t2, t3, t3, t2, t3, t2, t1],
+  [t1, t2, t3, t3, t2, t3, t3, t2, t2, t3, t3, t2, t3, t3, t2, t1],
+  [_, t1, t2, t3, t3, t3, t2, t1, t1, t2, t3, t3, t3, t2, t1, _],
+  [_, t1, t1, t2, t3, t2, t1, _, _, t1, t2, t3, t2, t1, t1, _],
+  [_, _, t1, t1, t2, t1, _, _, _, _, t1, t2, t1, t1, _, _],
+  [_, _, _, _, t1, _, _, t4, t4, _, _, t1, _, _, _, _],
+  [_, _, _, _, _, _, _, t4, t4, _, _, _, _, _, _, _],
+  [_, _, _, _, _, _, _, t5, t5, _, _, _, _, _, _, _],
+];
+
+// bush colors
+const b1 = "#2a5e1a"; // dark bush
+const b2 = "#3a7e2a"; // mid bush
+const b3 = "#4a9e3a"; // light bush
+const b4 = "#5aae4a"; // highlight bush
+
+/** 16x8 bush sprite */
+export const BUSH: SpriteData = [
+  [_, _, _, _, b1, b2, b2, b3, b3, b2, b2, b1, _, _, _, _],
+  [_, _, _, b1, b2, b3, b3, b4, b4, b3, b3, b2, b1, _, _, _],
+  [_, _, b1, b2, b3, b4, b3, b3, b3, b3, b4, b3, b2, b1, _, _],
+  [_, b1, b2, b3, b3, b3, b2, b3, b3, b2, b3, b3, b3, b2, b1, _],
+  [b1, b2, b3, b2, b3, b2, b1, b2, b2, b1, b2, b3, b2, b3, b2, b1],
+  [b1, b2, b3, b3, b2, b1, b2, b3, b3, b2, b1, b2, b3, b3, b2, b1],
+  [_, b1, b2, b3, b3, b2, b3, b2, b2, b3, b2, b3, b3, b2, b1, _],
+  [_, _, b1, b1, b2, b2, b1, b1, b1, b1, b2, b2, b1, b1, _, _],
+];
+
+// --- power-up sprites ---
+
+const pB = "#3498db"; // blue (spread)
+const pY = "#f1c40f"; // yellow (rapidfire)
+const pP = "#9b59b6"; // purple (pierce)
+const pO = "#e67e22"; // orange (nuke)
+const pW = "#ffffff"; // white highlight
+
+/** 10x10 spread shot power-up */
+export const POWERUP_SPREAD: SpriteData = [
+  [_, _, _, pB, pB, pB, pB, _, _, _],
+  [_, _, pB, pW, pW, pB, pB, pB, _, _],
+  [_, pB, pW, pB, pB, pB, pB, pB, pB, _],
+  [pB, pW, pB, pW, pB, pB, pW, pB, pB, pB],
+  [pB, pB, pB, pB, pB, pB, pB, pB, pB, pB],
+  [pB, pB, pB, pB, pB, pB, pB, pB, pB, pB],
+  [pB, pB, pB, pW, pB, pB, pW, pB, pB, pB],
+  [_, pB, pB, pB, pB, pB, pB, pB, pB, _],
+  [_, _, pB, pB, pB, pB, pB, pB, _, _],
+  [_, _, _, pB, pB, pB, pB, _, _, _],
+];
+
+/** 10x10 rapid fire power-up */
+export const POWERUP_RAPIDFIRE: SpriteData = [
+  [_, _, _, pY, pY, pY, pY, _, _, _],
+  [_, _, pY, pW, pW, pY, pY, pY, _, _],
+  [_, pY, pW, pY, pY, pY, pY, pY, pY, _],
+  [pY, pW, pY, pY, pW, pW, pY, pY, pY, pY],
+  [pY, pY, pY, pW, pW, pW, pW, pY, pY, pY],
+  [pY, pY, pY, pW, pW, pW, pW, pY, pY, pY],
+  [pY, pY, pY, pY, pW, pW, pY, pY, pY, pY],
+  [_, pY, pY, pY, pY, pY, pY, pY, pY, _],
+  [_, _, pY, pY, pY, pY, pY, pY, _, _],
+  [_, _, _, pY, pY, pY, pY, _, _, _],
+];
+
+/** 10x10 pierce power-up */
+export const POWERUP_PIERCE: SpriteData = [
+  [_, _, _, pP, pP, pP, pP, _, _, _],
+  [_, _, pP, pW, pW, pP, pP, pP, _, _],
+  [_, pP, pW, pP, pP, pP, pP, pP, pP, _],
+  [pP, pW, pP, pP, pP, pW, pP, pP, pP, pP],
+  [pP, pP, pP, pP, pW, pW, pW, pP, pP, pP],
+  [pP, pP, pP, pW, pW, pW, pP, pP, pP, pP],
+  [pP, pP, pP, pP, pW, pP, pP, pP, pP, pP],
+  [_, pP, pP, pP, pP, pP, pP, pP, pP, _],
+  [_, _, pP, pP, pP, pP, pP, pP, _, _],
+  [_, _, _, pP, pP, pP, pP, _, _, _],
+];
+
+/** 10x10 nuke power-up (clear all enemies) */
+export const POWERUP_NUKE: SpriteData = [
+  [_, _, _, pO, pO, pO, pO, _, _, _],
+  [_, _, pO, pW, pW, pO, pO, pO, _, _],
+  [_, pO, pW, pO, pO, pO, pO, pO, pO, _],
+  [pO, pW, pO, pO, pW, pO, pO, pO, pO, pO],
+  [pO, pO, pO, pW, pW, pW, pO, pO, pO, pO],
+  [pO, pO, pO, pO, pW, pW, pW, pO, pO, pO],
+  [pO, pO, pO, pO, pO, pW, pO, pO, pO, pO],
+  [_, pO, pO, pO, pO, pO, pO, pO, pO, _],
+  [_, _, pO, pO, pO, pO, pO, pO, _, _],
+  [_, _, _, pO, pO, pO, pO, _, _, _],
+];
