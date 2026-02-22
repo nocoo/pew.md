@@ -40,7 +40,7 @@ export interface Enemy extends Entity {
   score: number; // points awarded on kill
 }
 
-export type PowerUpKind = "spread" | "speed" | "rapidfire" | "shield" | "life";
+export type PowerUpKind = "spread" | "rapidfire" | "pierce" | "nuke";
 
 export interface PowerUp extends Entity {
   kind: PowerUpKind;

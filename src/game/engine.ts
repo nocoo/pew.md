@@ -1,4 +1,4 @@
-import type { GameState } from "./types";
+import type { GameState, PowerUpKind } from "./types";
 import { GAME_WIDTH, GAME_HEIGHT } from "./types";
 import { InputManager } from "./input";
 import { createPlayer, updatePlayer, hitPlayer } from "./player";
@@ -10,6 +10,14 @@ import {
   drawSprite,
   getCowboySprite,
   ENEMY_BASIC,
+  GRASS_TILE_A,
+  GRASS_TILE_B,
+  TREE_TOP,
+  BUSH,
+  POWERUP_SPREAD,
+  POWERUP_RAPIDFIRE,
+  POWERUP_PIERCE,
+  POWERUP_NUKE,
 } from "./sprites";
 
 const SCALE = 2; // render at 2x for crisp pixels
@@ -17,8 +25,7 @@ const CANVAS_WIDTH = GAME_WIDTH * SCALE;
 const CANVAS_HEIGHT = GAME_HEIGHT * SCALE;
 
 const BULLET_COLOR = "#f1c40f";
-const GROUND_COLOR = "#c2a35a";
-const GROUND_DARK = "#b3944d";
+const BORDER_SIZE = 16; // pixels reserved for border decoration
 
 export class GameEngine {
   private readonly canvas: HTMLCanvasElement;
@@ -30,6 +37,7 @@ export class GameEngine {
   private state: GameState;
   private animFrameId: number | null = null;
   private lastTime = 0;
+  private backgroundCanvas: OffscreenCanvas | null = null;
   private onScoreChange?: (score: number) => void;
   private onLivesChange?: (lives: number) => void;
   private onWaveChange?: (wave: number) => void;
@@ -201,24 +209,25 @@ export class GameEngine {
     const ctx = this.offCtx;
     const { state } = this;
 
-    // clear with ground color
-    ctx.fillStyle = GROUND_COLOR;
-    ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-
-    // draw ground pattern (subtle grid)
-    ctx.fillStyle = GROUND_DARK;
-    for (let y = 0; y < GAME_HEIGHT; y += 32) {
-      for (let x = 0; x < GAME_WIDTH; x += 32) {
-        if ((x / 32 + y / 32) % 2 === 0) {
-          ctx.fillRect(x, y, 32, 32);
-        }
-      }
+    // draw cached background (grass + border decorations)
+    if (!this.backgroundCanvas) {
+      this.backgroundCanvas = this.buildBackground();
     }
+    ctx.drawImage(this.backgroundCanvas, 0, 0);
 
     if (state.phase === "title") {
       this.renderTitle(ctx);
       this.blitToScreen();
       return;
+    }
+
+    // draw power-ups
+    for (const pu of state.powerUps) {
+      if (!pu.alive) continue;
+      const sprite = this.getPowerUpSprite(pu.kind);
+      if (sprite) {
+        drawSprite(ctx, sprite, pu.pos.x, pu.pos.y);
+      }
     }
 
     // draw bullets
@@ -255,6 +264,56 @@ export class GameEngine {
     }
 
     this.blitToScreen();
+  }
+
+  private getPowerUpSprite(kind: PowerUpKind) {
+    switch (kind) {
+      case "spread": return POWERUP_SPREAD;
+      case "rapidfire": return POWERUP_RAPIDFIRE;
+      case "pierce": return POWERUP_PIERCE;
+      case "nuke": return POWERUP_NUKE;
+      default: return null;
+    }
+  }
+
+  /** Build a static background canvas with grass tiles and border decorations */
+  private buildBackground(): OffscreenCanvas {
+    const bg = new OffscreenCanvas(GAME_WIDTH, GAME_HEIGHT);
+    const ctx = bg.getContext("2d")!;
+    ctx.imageSmoothingEnabled = false;
+
+    // tile grass
+    const tileW = GRASS_TILE_A[0].length;
+    const tileH = GRASS_TILE_A.length;
+    for (let y = 0; y < GAME_HEIGHT; y += tileH) {
+      for (let x = 0; x < GAME_WIDTH; x += tileW) {
+        const tile = ((x / tileW + y / tileH) % 2 === 0) ? GRASS_TILE_A : GRASS_TILE_B;
+        drawSprite(ctx, tile, x, y);
+      }
+    }
+
+    // draw border decorations: trees and bushes around the edges
+    // top edge
+    for (let x = 0; x < GAME_WIDTH; x += 32) {
+      drawSprite(ctx, TREE_TOP, x, -6);
+    }
+    // bottom edge
+    for (let x = 8; x < GAME_WIDTH; x += 40) {
+      drawSprite(ctx, BUSH, x, GAME_HEIGHT - 8);
+    }
+    // left edge
+    for (let y = 24; y < GAME_HEIGHT - 16; y += 48) {
+      drawSprite(ctx, TREE_TOP, -6, y);
+    }
+    // right edge
+    for (let y = 40; y < GAME_HEIGHT - 16; y += 48) {
+      drawSprite(ctx, TREE_TOP, GAME_WIDTH - 10, y);
+    }
+    // corner bushes
+    drawSprite(ctx, BUSH, 0, GAME_HEIGHT - 8);
+    drawSprite(ctx, BUSH, GAME_WIDTH - 16, GAME_HEIGHT - 8);
+
+    return bg;
   }
 
   private renderTitle(ctx: OffscreenCanvasRenderingContext2D): void {
