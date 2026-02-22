@@ -23,11 +23,11 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-6">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-4">
       <h1 className="font-mono text-3xl font-bold text-[#f5f0e1]">
         PEW.MD
       </h1>
-      <div className="flex items-start gap-6">
+      <div className="flex items-stretch gap-4">
         <GameCanvas onScoreSubmitted={handleScoreSubmitted} />
         <Leaderboard refreshKey={refreshKey} highlightId={highlightId} />
       </div>

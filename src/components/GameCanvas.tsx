@@ -117,9 +117,16 @@ export default function GameCanvas({ onScoreSubmitted }: GameCanvasProps) {
   }, [handleScoreChange, handleLivesChange, handleWaveChange, handleGameOver]);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      {/* HUD */}
-      <div className="flex gap-6 font-mono text-sm text-[#f5f0e1]">
+    <div className="relative">
+      <canvas
+        ref={canvasRef}
+        className="block border-2 border-[#5b3a29] bg-black"
+        tabIndex={0}
+        onFocus={() => canvasRef.current?.focus()}
+      />
+
+      {/* HUD overlay — top */}
+      <div className="pointer-events-none absolute left-0 right-0 top-0 flex justify-center gap-6 px-3 py-2 font-mono text-xs text-[#f5f0e1] drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
         <span>Score: {score}</span>
         <span>Wave: {wave}</span>
         <span>
@@ -132,33 +139,23 @@ export default function GameCanvas({ onScoreSubmitted }: GameCanvasProps) {
         </span>
       </div>
 
-      {/* Canvas + overlay container */}
-      <div className="relative">
-        <canvas
-          ref={canvasRef}
-          className="border-2 border-[#5b3a29] bg-black"
-          tabIndex={0}
-          onFocus={() => canvasRef.current?.focus()}
-        />
-
-        {/* Name input overlay on game over */}
-        {showNameInput && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/60">
-            <NameInput
-              score={score}
-              onSubmit={submitScore}
-              onSkip={skipScore}
-              submitting={submitting}
-            />
-          </div>
-        )}
-      </div>
-
-      {/* Instructions */}
+      {/* Title instructions overlay — center */}
       {phase === "title" && (
-        <p className="font-mono text-xs text-[#999]">
+        <div className="pointer-events-none absolute bottom-8 left-0 right-0 text-center font-mono text-xs text-[#999]">
           Press SPACE to start — WASD / Arrow keys to move &amp; shoot
-        </p>
+        </div>
+      )}
+
+      {/* Name input overlay on game over */}
+      {showNameInput && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+          <NameInput
+            score={score}
+            onSubmit={submitScore}
+            onSkip={skipScore}
+            submitting={submitting}
+          />
+        </div>
       )}
     </div>
   );
