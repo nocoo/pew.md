@@ -1,0 +1,31 @@
+{
+  "name": "pew.md",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "bun test",
+    "test:e2e": "bun test --preload ./src/__tests__/e2e/setup.ts src/__tests__/e2e",
+    "check": "bun run lint && bun test"
+  },
+  "dependencies": {
+    "next": "^16.1.6",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@tailwindcss/postcss": "^4.2.0",
+    "@types/bun": "^1.2.14",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "eslint": "^9.25.0",
+    "eslint-config-next": "^16.1.6",
+    "tailwindcss": "^4.2.0",
+    "typescript": "^5.9.3"
+  }
+}
