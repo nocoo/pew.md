@@ -102,17 +102,19 @@ export const ENEMY_BASIC: SpriteData = [
   [_, _, _, _, _, K, K, _, _, K, K, _, _, _, _, _],
 ];
 
-// cache rendered ImageData so we don't redraw every frame
-const spriteCache = new Map<SpriteData, ImageData>();
+// cache rendered sprites as OffscreenCanvas for proper alpha compositing
+const spriteCache = new Map<SpriteData, OffscreenCanvas>();
 
-/** Render a SpriteData into an ImageData (cached) */
-export function getSpriteImageData(sprite: SpriteData): ImageData {
+/** Render a SpriteData into an OffscreenCanvas (cached) */
+function getSpriteCanvas(sprite: SpriteData): OffscreenCanvas {
   const cached = spriteCache.get(sprite);
   if (cached) return cached;
 
   const h = sprite.length;
   const w = sprite[0].length;
-  const imageData = new ImageData(w, h);
+  const offscreen = new OffscreenCanvas(w, h);
+  const ctx = offscreen.getContext("2d")!;
+  const imageData = ctx.createImageData(w, h);
 
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
@@ -130,21 +132,22 @@ export function getSpriteImageData(sprite: SpriteData): ImageData {
     }
   }
 
-  spriteCache.set(sprite, imageData);
-  return imageData;
+  ctx.putImageData(imageData, 0, 0);
+  spriteCache.set(sprite, offscreen);
+  return offscreen;
 }
 
 type RenderContext = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 
-/** Draw a sprite onto a canvas context at game coordinates */
+/** Draw a sprite onto a canvas context at game coordinates (with transparency) */
 export function drawSprite(
   ctx: RenderContext,
   sprite: SpriteData,
   x: number,
   y: number,
 ): void {
-  const imageData = getSpriteImageData(sprite);
-  ctx.putImageData(imageData, Math.round(x), Math.round(y));
+  const canvas = getSpriteCanvas(sprite);
+  ctx.drawImage(canvas, Math.round(x), Math.round(y));
 }
 
 /** Pick cowboy sprite based on facing direction */
